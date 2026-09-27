@@ -14,18 +14,18 @@ concurrency:
 
 jobs:
   test:
-    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@ab6caea57060a3eba5fc58cadbb2aaa1b06da18a # main
+    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@70ae2b114f3e2b2c4c4eff8d32f86efb01a532fa # main
     secrets: inherit # zizmor: ignore[secrets-inherit]
 
   create-version:
-    uses: platform-mesh/.github/.github/workflows/job-create-version.yml@ab6caea57060a3eba5fc58cadbb2aaa1b06da18a # main
+    uses: platform-mesh/.github/.github/workflows/job-create-version.yml@70ae2b114f3e2b2c4c4eff8d32f86efb01a532fa # main
     secrets: inherit # zizmor: ignore[secrets-inherit]
     permissions:
       contents: write # Needed to create the version tag/release
 
   docker-build-push:
     needs: [create-version, test]
-    uses: platform-mesh/.github/.github/workflows/job-docker-build-push.yml@ab6caea57060a3eba5fc58cadbb2aaa1b06da18a # main
+    uses: platform-mesh/.github/.github/workflows/job-docker-build-push.yml@70ae2b114f3e2b2c4c4eff8d32f86efb01a532fa # main
     secrets: inherit # zizmor: ignore[secrets-inherit]
     permissions:
       contents: write # Needed to update release artifacts
@@ -38,7 +38,7 @@ jobs:
 
   update-version:
     needs: [create-version, docker-build-push]
-    uses: platform-mesh/.github/.github/workflows/job-chart-version-update.yml@ab6caea57060a3eba5fc58cadbb2aaa1b06da18a # main
+    uses: platform-mesh/.github/.github/workflows/job-chart-version-update.yml@70ae2b114f3e2b2c4c4eff8d32f86efb01a532fa # main
     secrets: inherit # zizmor: ignore[secrets-inherit]
     with:
       appVersion: ${{ needs.create-version.outputs.version }}
@@ -47,7 +47,7 @@ jobs:
 
   sbom:
     needs: [create-version, docker-build-push]
-    uses: platform-mesh/.github/.github/workflows/job-sbom.yml@ab6caea57060a3eba5fc58cadbb2aaa1b06da18a # main
+    uses: platform-mesh/.github/.github/workflows/job-sbom.yml@70ae2b114f3e2b2c4c4eff8d32f86efb01a532fa # main
     permissions:
       contents: read # Needed to read repository contents
       packages: read # Needed to pull the image to generate the SBOM
@@ -56,7 +56,7 @@ jobs:
 
   image-ocm:
     needs: [create-version, docker-build-push, sbom]
-    uses: platform-mesh/.github/.github/workflows/job-image-ocm.yml@ab6caea57060a3eba5fc58cadbb2aaa1b06da18a # main
+    uses: platform-mesh/.github/.github/workflows/job-image-ocm.yml@70ae2b114f3e2b2c4c4eff8d32f86efb01a532fa # main
     secrets: inherit # zizmor: ignore[secrets-inherit]
     permissions:
       contents: read # Needed to read repository contents
@@ -69,7 +69,7 @@ jobs:
 
   scan-sbom:
     needs: [create-version, docker-build-push, sbom, image-ocm]
-    uses: platform-mesh/.github/.github/workflows/job-trivy-sbom.yml@ab6caea57060a3eba5fc58cadbb2aaa1b06da18a # main
+    uses: platform-mesh/.github/.github/workflows/job-trivy-sbom.yml@70ae2b114f3e2b2c4c4eff8d32f86efb01a532fa # main
     permissions:
       contents: read # Needed to read repository contents
       packages: read # Needed to pull the image referenced by the SBOM
