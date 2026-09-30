@@ -1,43 +1,46 @@
 <section class="platform-admin">
-  <header class="platform-admin__header">
-    <div>
-      <h1 class="platform-admin__title">Platform Admin — APIExport Enablement</h1>
-      <p class="platform-admin__subtitle">
-        Control which organizations are allowed to bind each APIExport.
-      </p>
+  <div class="fd-toolbar fd-toolbar--solid fd-toolbar--title platform-admin__toolbar">
+    <div class="platform-admin__header-text">
+      <h1 class="fd-title fd-title--h4">Platform Admin — APIExport Enablement</h1>
+      <p class="platform-admin__subtitle">Control which organizations are allowed to bind each APIExport.</p>
     </div>
+    <div class="fd-toolbar__spacer"></div>
     <button
       type="button"
-      class="button button--ghost"
+      class="fd-button fd-button--transparent"
       (click)="reload()"
       [disabled]="loading()"
     >
       Refresh
     </button>
-  </header>
+  </div>
 
   @if (actionError()) {
-    <div class="banner banner--error" role="alert">
-      {{ actionError() }}
+    <div class="fd-message-strip fd-message-strip--error" role="alert">
+      <span class="fd-message-strip__text">{{ actionError() }}</span>
     </div>
   }
 
   @if (loading()) {
-    <div class="state state--loading">
-      <div class="spinner"></div>
+    <div class="platform-admin__state">
+      <div class="fd-busy-indicator fd-busy-indicator--m" aria-hidden="false" aria-label="Loading">
+        <div class="fd-busy-indicator__circle"></div>
+        <div class="fd-busy-indicator__circle"></div>
+        <div class="fd-busy-indicator__circle"></div>
+      </div>
       <span>Loading APIExports…</span>
     </div>
   } @else if (error()) {
-    <div class="state state--error" role="alert">
-      <span>{{ error() }}</span>
-      <button type="button" class="button" (click)="reload()">Retry</button>
+    <div class="platform-admin__state" role="alert" data-testid="state-error">
+      <span class="platform-admin__state--error">{{ error() }}</span>
+      <button type="button" class="fd-button fd-button--transparent" (click)="reload()">Retry</button>
     </div>
   } @else if (rows().length === 0) {
-    <div class="state state--empty">
+    <div class="platform-admin__state" data-testid="state-empty">
       <span>No APIExports available to enable.</span>
     </div>
   } @else {
-    <table class="admin-table">
+    <table class="platform-admin__table">
       <thead>
         <tr>
           <th scope="col">Name</th>
@@ -49,44 +52,44 @@
       <tbody>
         @for (row of rows(); track row.key) {
           <tr>
-            <td class="admin-table__name">{{ row.name }}</td>
-            <td class="admin-table__provider">{{ row.clusterPath }}</td>
+            <td class="platform-admin__cell--name">{{ row.name }}</td>
+            <td class="platform-admin__cell--provider">{{ row.clusterPath }}</td>
             <td>
               <span
-                class="status"
-                [class.status--enabled]="row.enabled"
-                [class.status--disabled]="!row.enabled"
+                class="fd-object-status"
+                [class.fd-object-status--positive]="row.enabled"
+                [class.fd-object-status--negative]="!row.enabled"
               >
                 {{ row.enabled ? 'Enabled' : 'Not enabled' }}
               </span>
             </td>
             <td>
               @if (isEditing(row)) {
-                <div class="org-editor">
-                  <label class="org-option">
+                <div class="platform-admin__org-editor">
+                  <label class="platform-admin__org-option fd-form-label">
                     <input
                       #allOrgs
                       type="checkbox"
                       [checked]="isOrgSelected('*')"
                       (change)="toggleOrg('*', allOrgs.checked)"
                     />
-                    <span>All organizations (*)</span>
+                    All organizations (*)
                   </label>
                   @for (org of orgs(); track org.name) {
-                    <label class="org-option">
+                    <label class="platform-admin__org-option fd-form-label">
                       <input
                         #orgBox
                         type="checkbox"
                         [checked]="isOrgSelected(org.name)"
                         (change)="toggleOrg(org.name, orgBox.checked)"
                       />
-                      <span>{{ org.name }}</span>
+                      {{ org.name }}
                     </label>
                   }
-                  <div class="org-editor__actions">
+                  <div class="platform-admin__org-actions">
                     <button
                       type="button"
-                      class="button button--primary"
+                      class="fd-button fd-button--emphasized"
                       (click)="save(row)"
                       [disabled]="saving()"
                     >
@@ -94,7 +97,7 @@
                     </button>
                     <button
                       type="button"
-                      class="button button--ghost"
+                      class="fd-button fd-button--transparent"
                       (click)="cancelEdit()"
                       [disabled]="saving()"
                     >
@@ -103,17 +106,17 @@
                   </div>
                 </div>
               } @else {
-                <div class="org-display">
+                <div class="platform-admin__org-display">
                   @if (row.allowedOrgs.length === 0) {
-                    <span class="org-display__empty">—</span>
+                    <span class="platform-admin__empty-orgs">—</span>
                   } @else {
                     @for (org of row.allowedOrgs; track org) {
-                      <span class="chip">{{ org }}</span>
+                      <span class="platform-admin__chip">{{ org }}</span>
                     }
                   }
                   <button
                     type="button"
-                    class="button button--ghost button--small"
+                    class="fd-button fd-button--transparent fd-button--tool-header"
                     (click)="startEdit(row)"
                   >
                     Edit
@@ -127,4 +130,3 @@
     </table>
   }
 </section>
-
