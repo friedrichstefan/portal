@@ -38,4 +38,5 @@ const proxy = {
 module.exports = {
   '/callback': proxy,
   '/rest': proxy,
+  '/api': proxy,
 };
