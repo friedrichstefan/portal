@@ -15,6 +15,7 @@ import {
 import { config } from 'dotenv';
 import * as path from 'node:path';
 import { PlatformAdminController } from './platform-admin/platform-admin.controller.js';
+import { PlatformAdminGuard } from './platform-admin/platform-admin.guard.js';
 import { PlatformAdminService } from './platform-admin/platform-admin.service.js';
 
 const __filename = new URL(import.meta.url).pathname;
@@ -42,6 +43,7 @@ const portalOptions: PortalModuleOptions = {
     PermissionsProxyService,
     AuthzWebhookService,
     PlatformAdminService,
+    PlatformAdminGuard,
   ],
   additionalControllers: [PermissionsController, PlatformAdminController],
   serviceProviderService: KubernetesServiceProvidersService,

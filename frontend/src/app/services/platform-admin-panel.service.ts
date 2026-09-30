@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
+import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { Observable, firstValueFrom } from 'rxjs';
 
 export interface ApiExportRef {
@@ -36,6 +37,7 @@ export interface UpdatePolicyRequest {
 @Injectable({ providedIn: 'root' })
 export class PlatformAdminPanelService {
   private readonly http = inject(HttpClient);
+  private readonly luigiCore = inject(LuigiCoreService);
   private readonly baseUrl = '/api/v1/admin';
 
   readonly apiExports = signal<ApiExportEntry[]>([]);
@@ -64,32 +66,51 @@ export class PlatformAdminPanelService {
   }
 
   listApiExports(): Observable<ApiExportEntry[]> {
-    return this.http.get<ApiExportEntry[]>(`${this.baseUrl}/apiexports`);
+    return this.http.get<ApiExportEntry[]>(
+      `${this.baseUrl}/apiexports`,
+      this.authOptions(),
+    );
   }
 
   listOrgs(): Observable<OrgEntry[]> {
-    return this.http.get<OrgEntry[]>(`${this.baseUrl}/orgs`);
+    return this.http.get<OrgEntry[]>(`${this.baseUrl}/orgs`, this.authOptions());
   }
 
   listPolicies(): Observable<PolicyEntry[]> {
-    return this.http.get<PolicyEntry[]>(`${this.baseUrl}/apiexport-policies`);
+    return this.http.get<PolicyEntry[]>(
+      `${this.baseUrl}/apiexport-policies`,
+      this.authOptions(),
+    );
   }
 
   createPolicy(request: CreatePolicyRequest): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/apiexport-policies`, request);
+    return this.http.post<void>(
+      `${this.baseUrl}/apiexport-policies`,
+      request,
+      this.authOptions(),
+    );
   }
 
   updatePolicy(name: string, request: UpdatePolicyRequest): Observable<void> {
     return this.http.put<void>(
       `${this.baseUrl}/apiexport-policies/${encodeURIComponent(name)}`,
       request,
+      this.authOptions(),
     );
   }
 
   deletePolicy(name: string): Observable<void> {
     return this.http.delete<void>(
       `${this.baseUrl}/apiexport-policies/${encodeURIComponent(name)}`,
+      this.authOptions(),
     );
+  }
+
+  // The backend guards these endpoints with a bearer token (see
+  // PlatformAdminGuard); attach it the same way the portal's own services do.
+  private authOptions(): { headers?: Record<string, string> } {
+    const idToken = this.luigiCore.getAuthData()?.idToken;
+    return idToken ? { headers: { Authorization: `Bearer ${idToken}` } } : {};
   }
 
   private toMessage(err: unknown, fallback: string): string {

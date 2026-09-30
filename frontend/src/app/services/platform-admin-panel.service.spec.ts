@@ -4,6 +4,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   ApiExportEntry,
@@ -20,7 +21,14 @@ describe('PlatformAdminPanelService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: LuigiCoreService,
+          useValue: { getAuthData: () => ({ idToken: 'test-token' }) },
+        },
+      ],
     });
     service = TestBed.inject(PlatformAdminPanelService);
     httpMock = TestBed.inject(HttpTestingController);

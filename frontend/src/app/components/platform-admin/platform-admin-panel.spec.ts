@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { LuigiCoreService } from '@openmfp/portal-ui-lib';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ApiExportEntry,
@@ -37,6 +38,10 @@ describe('PlatformAdminComponent', () => {
         provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
+        {
+          provide: LuigiCoreService,
+          useValue: { getAuthData: () => ({ idToken: 'test-token' }) },
+        },
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
@@ -96,7 +101,7 @@ describe('PlatformAdminComponent', () => {
   it('shows the empty state when there are no apiexports', async () => {
     await init({ apiExports: [], orgs: [], policies: [] });
 
-    expect(fixture.nativeElement.querySelector('.state--empty')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="state-empty"]')).toBeTruthy();
   });
 
   it('shows the error state when loading fails', async () => {
@@ -112,7 +117,7 @@ describe('PlatformAdminComponent', () => {
     await tick();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.state--error')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="state-error"]')).toBeTruthy();
   });
 
   it('POSTs a create when a row without a policy gains orgs', async () => {

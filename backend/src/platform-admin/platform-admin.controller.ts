@@ -7,7 +7,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { PlatformAdminGuard } from './platform-admin.guard.js';
 import { PlatformAdminService } from './platform-admin.service.js';
 import type {
   ApiExportEntry,
@@ -18,6 +20,7 @@ import type {
 } from './platform-admin.types.js';
 
 @Controller('api/v1/admin')
+@UseGuards(PlatformAdminGuard)
 export class PlatformAdminController {
   constructor(private readonly svc: PlatformAdminService) {}
 
