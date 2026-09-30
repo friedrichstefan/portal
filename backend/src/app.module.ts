@@ -14,6 +14,8 @@ import {
 } from '@platform-mesh/portal-server-lib/portal-options';
 import { config } from 'dotenv';
 import * as path from 'node:path';
+import { PlatformAdminController } from './platform-admin/platform-admin.controller.js';
+import { PlatformAdminService } from './platform-admin/platform-admin.service.js';
 
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
@@ -39,8 +41,9 @@ const portalOptions: PortalModuleOptions = {
     PMAuthConfigProvider,
     PermissionsProxyService,
     AuthzWebhookService,
+    PlatformAdminService,
   ],
-  additionalControllers: [PermissionsController],
+  additionalControllers: [PermissionsController, PlatformAdminController],
   serviceProviderService: KubernetesServiceProvidersService,
   authConfigProvider: PMAuthConfigProvider,
   logoutCallbackProvider: PMLogoutService,

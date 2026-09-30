@@ -1,0 +1,130 @@
+<section class="platform-admin">
+  <header class="platform-admin__header">
+    <div>
+      <h1 class="platform-admin__title">Platform Admin — APIExport Enablement</h1>
+      <p class="platform-admin__subtitle">
+        Control which organizations are allowed to bind each APIExport.
+      </p>
+    </div>
+    <button
+      type="button"
+      class="button button--ghost"
+      (click)="reload()"
+      [disabled]="loading()"
+    >
+      Refresh
+    </button>
+  </header>
+
+  @if (actionError()) {
+    <div class="banner banner--error" role="alert">
+      {{ actionError() }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="state state--loading">
+      <div class="spinner"></div>
+      <span>Loading APIExports…</span>
+    </div>
+  } @else if (error()) {
+    <div class="state state--error" role="alert">
+      <span>{{ error() }}</span>
+      <button type="button" class="button" (click)="reload()">Retry</button>
+    </div>
+  } @else if (rows().length === 0) {
+    <div class="state state--empty">
+      <span>No APIExports available to enable.</span>
+    </div>
+  } @else {
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Provider</th>
+          <th scope="col">Status</th>
+          <th scope="col">Allowed organizations</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.key) {
+          <tr>
+            <td class="admin-table__name">{{ row.name }}</td>
+            <td class="admin-table__provider">{{ row.clusterPath }}</td>
+            <td>
+              <span
+                class="status"
+                [class.status--enabled]="row.enabled"
+                [class.status--disabled]="!row.enabled"
+              >
+                {{ row.enabled ? 'Enabled' : 'Not enabled' }}
+              </span>
+            </td>
+            <td>
+              @if (isEditing(row)) {
+                <div class="org-editor">
+                  <label class="org-option">
+                    <input
+                      #allOrgs
+                      type="checkbox"
+                      [checked]="isOrgSelected('*')"
+                      (change)="toggleOrg('*', allOrgs.checked)"
+                    />
+                    <span>All organizations (*)</span>
+                  </label>
+                  @for (org of orgs(); track org.name) {
+                    <label class="org-option">
+                      <input
+                        #orgBox
+                        type="checkbox"
+                        [checked]="isOrgSelected(org.name)"
+                        (change)="toggleOrg(org.name, orgBox.checked)"
+                      />
+                      <span>{{ org.name }}</span>
+                    </label>
+                  }
+                  <div class="org-editor__actions">
+                    <button
+                      type="button"
+                      class="button button--primary"
+                      (click)="save(row)"
+                      [disabled]="saving()"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      class="button button--ghost"
+                      (click)="cancelEdit()"
+                      [disabled]="saving()"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="org-display">
+                  @if (row.allowedOrgs.length === 0) {
+                    <span class="org-display__empty">—</span>
+                  } @else {
+                    @for (org of row.allowedOrgs; track org) {
+                      <span class="chip">{{ org }}</span>
+                    }
+                  }
+                  <button
+                    type="button"
+                    class="button button--ghost button--small"
+                    (click)="startEdit(row)"
+                  >
+                    Edit
+                  </button>
+                </div>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
+

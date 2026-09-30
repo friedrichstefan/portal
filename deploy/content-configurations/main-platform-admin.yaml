@@ -1,0 +1,44 @@
+apiVersion: ui.platform-mesh.io/v1alpha1
+kind: ContentConfiguration
+metadata:
+  labels:
+    ui.platform-mesh.io/entity: main
+  name: main-platform-admin
+spec:
+  inlineConfiguration:
+    contentType: json
+    content: |-
+      {
+        "name": "platform-admin",
+        "luigiConfigFragment": {
+          "data": {
+            "nodes": [
+              {
+                "pathSegment": "platform-admin",
+                "label": "Platform Admin",
+                "icon": "official-service",
+                "order": 850,
+                "entityType": "main",
+                "url": "/assets/pm-platform-admin-wc.js",
+                "webcomponent": {
+                  "selfRegistered": true,
+                  "type": "module",
+                  "tagName": "pm-platform-admin"
+                },
+                "category": {
+                  "id": "settings",
+                  "isGroup": true,
+                  "label": "Settings & Access",
+                  "order": 1000
+                },
+                "context": {
+                  "resourceDefinition": {
+                    "group": "core.platform-mesh.io",
+                    "kind": "Account"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
